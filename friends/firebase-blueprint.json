@@ -1,0 +1,57 @@
+{
+  "entities": {
+    "FriendNode": {
+      "title": "FriendNode",
+      "description": "Represents a friend in the social network graph",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 100 },
+        "handle": { "type": "string", "maxLength": 60 },
+        "avatarUrl": { "type": "string", "maxLength": 500 },
+        "interests": { "type": "array" },
+        "bio": { "type": "string", "maxLength": 300 },
+        "customClusterId": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "name", "handle"]
+    },
+    "FriendEdge": {
+      "title": "FriendEdge",
+      "description": "Represents an edge / relationship between two friends",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "source": { "type": "string", "maxLength": 128 },
+        "target": { "type": "string", "maxLength": 128 },
+        "strength": { "type": "number" },
+        "relationshipType": { "type": "string", "maxLength": 200 },
+        "mutualChatsPerWeek": { "type": "number" }
+      },
+      "required": ["id", "source", "target", "strength"]
+    },
+    "GraphSettings": {
+      "title": "GraphSettings",
+      "description": "Graph metadata including custom cluster names and editor credentials",
+      "type": "object",
+      "properties": {
+        "customClusterNames": { "type": "object" },
+        "adminCredentials": { "type": "object" },
+        "updatedAt": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/friends/{friendId}": {
+      "schema": "FriendNode",
+      "description": "Collection of friends in the graph"
+    },
+    "/connections/{connectionId}": {
+      "schema": "FriendEdge",
+      "description": "Collection of friendships and connection edges"
+    },
+    "/settings/{settingId}": {
+      "schema": "GraphSettings",
+      "description": "Graph cluster names and editor configurations"
+    }
+  }
+}

@@ -1,0 +1,53 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidFriend(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 100
+        && data.handle is string && data.handle.size() > 0 && data.handle.size() <= 60
+        && (!('avatarUrl' in data) || (data.avatarUrl is string && data.avatarUrl.size() <= 500))
+        && (!('bio' in data) || (data.bio is string && data.bio.size() <= 300))
+        && (!('customClusterId' in data) || (data.customClusterId is string && data.customClusterId.size() <= 50))
+        && (!('interests' in data) || (data.interests is list && data.interests.size() <= 25));
+    }
+
+    function isValidEdge(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.source is string && data.source.size() <= 128
+        && data.target is string && data.target.size() <= 128
+        && data.strength is number && data.strength >= 1 && data.strength <= 5
+        && (!('relationshipType' in data) || (data.relationshipType is string && data.relationshipType.size() <= 200))
+        && (!('mutualChatsPerWeek' in data) || (data.mutualChatsPerWeek is number));
+    }
+
+    // Friends collection
+    match /friends/{friendId} {
+      allow read: if true;
+      allow create, update: if isValidId(friendId) && isValidFriend(request.resource.data);
+      allow delete: if isValidId(friendId);
+    }
+
+    // Connections collection
+    match /connections/{connectionId} {
+      allow read: if true;
+      allow create, update: if isValidId(connectionId) && isValidEdge(request.resource.data);
+      allow delete: if isValidId(connectionId);
+    }
+
+    // Graph Settings & Clusters
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isValidId(settingId);
+    }
+  }
+}

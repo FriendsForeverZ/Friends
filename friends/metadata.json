@@ -1,0 +1,8 @@
+{
+  "name": "FriendAtlas - Interactive Friend Network Graph",
+  "description": "Interactive social graph visualizer for friend groups with force-directed physics, community clustering, bridge connector detection, animated connection beams, and secret admin panel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
